@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: "#666", lineHeight: 22 },
   otpContainer: {
     flexDirection: "row",
+    gap: 8,
     justifyContent: "space-around", // better spacing
     marginBottom: 32,
   },
