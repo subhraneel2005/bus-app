@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs screenOptions={{ headerShown: false, animation: "shift" }}>
       <Tabs.Screen
         name="bus"
         options={{
@@ -19,7 +19,7 @@ export default function TabLayout() {
         options={{
           title: "Tickets",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ticket-outline" size={24} color="black" />
+            <Ionicons name="ticket-outline" size={24} color={color} />
           ),
         }}
       />

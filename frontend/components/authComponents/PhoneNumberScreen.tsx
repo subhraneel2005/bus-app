@@ -9,15 +9,30 @@ import {
   Platform,
   KeyboardAvoidingView,
   SafeAreaView,
+  ActivityIndicator,
+  Vibration,
 } from "react-native";
 
 export default function PhoneNumberScreen() {
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleContinue = () => {
-    console.log("Phone number:", phoneNumber);
-    router.push("/otp");
+  const handleContinue = async () => {
+    if (loading) return;
+    setLoading(true);
+    Vibration.vibrate(50);
+
+    try {
+      console.log("Phone number:", phoneNumber);
+      // simulate sending OTP or API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      router.push("/otp");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isValidPhone = phoneNumber.length >= 10;
@@ -53,12 +68,19 @@ export default function PhoneNumberScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, !isValidPhone && styles.buttonDisabled]}
+            style={[
+              styles.button,
+              (!isValidPhone || loading) && styles.buttonDisabled,
+            ]}
             onPress={handleContinue}
-            disabled={!isValidPhone}
+            disabled={!isValidPhone || loading}
             activeOpacity={0.7}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Continue</Text>
+            )}
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

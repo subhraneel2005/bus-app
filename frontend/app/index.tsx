@@ -1,4 +1,3 @@
-import OtpScreen from "@/components/authComponents/OtpScreen";
 import PhoneNumberScreen from "@/components/authComponents/PhoneNumberScreen";
 import { View } from "react-native";
 

@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React, { useState, useRef } from "react";
 import {
   View,
@@ -9,6 +10,8 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   TextInput as RNTextInput,
+  ActivityIndicator,
+  Vibration,
 } from "react-native";
 
 interface OTPScreenProps {
@@ -21,7 +24,8 @@ interface OTPScreenProps {
 
 export default function OTPScreen({ route }: OTPScreenProps) {
   const phoneNumber = route?.params?.phoneNumber || "";
-  const [otp, setOtp] = useState<string[]>(["", "", "", ""]); // 4-digit OTP
+  const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
+  const [loading, setLoading] = useState(false);
   const inputRefs = useRef<Array<RNTextInput | null>>([]);
 
   const handleChange = (text: string, index: number) => {
@@ -37,9 +41,19 @@ export default function OTPScreen({ route }: OTPScreenProps) {
   };
 
   const handleVerify = () => {
-    const enteredOtp = otp.join("");
-    console.log("OTP entered:", enteredOtp);
-    // Add verification logic here
+    if (loading) return;
+    setLoading(true);
+
+    Vibration.vibrate(50);
+    try {
+      const enteredOtp = otp.join("");
+      console.log("OTP entered:", enteredOtp);
+      router.push("/(tabs)/bus");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isValidOtp = otp.every((digit) => digit !== "");
@@ -75,12 +89,19 @@ export default function OTPScreen({ route }: OTPScreenProps) {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, !isValidOtp && styles.buttonDisabled]}
+            style={[
+              styles.button,
+              (styles.button, !isValidOtp || loading) && styles.buttonDisabled,
+            ]}
             onPress={handleVerify}
-            disabled={!isValidOtp}
+            disabled={!isValidOtp || loading}
             activeOpacity={0.7}
           >
-            <Text style={styles.buttonText}>Verify</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Verify</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.resendButton} activeOpacity={0.7}>
@@ -107,7 +128,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: "#666", lineHeight: 22 },
   otpContainer: {
     flexDirection: "row",
-    gap: 8,
+    gap: 12,
     justifyContent: "space-around", // better spacing
     marginBottom: 32,
   },
